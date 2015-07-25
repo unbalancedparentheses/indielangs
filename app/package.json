@@ -1,0 +1,16 @@
+{
+  "jspm": {
+    "directories": {},
+    "dependencies": {
+      "mithril": "npm:mithril@^0.2.0",
+      "moment": "github:moment/moment@^2.10.3"
+    },
+    "devDependencies": {
+      "traceur": "github:jmcriffey/bower-traceur@0.0.88",
+      "traceur-runtime": "github:jmcriffey/bower-traceur-runtime@0.0.88"
+    }
+  },
+  "dependencies": {
+    "material-design-lite": "^1.0.1"
+  }
+}

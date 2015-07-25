@@ -1,0 +1,33 @@
+web:
+  build: ./web
+  links:
+    - db
+  environment:
+    DB: db
+  restart: always
+
+worker:
+  build: ./worker
+  links:
+    - db
+  environment:
+    DB: db
+  restart: always
+
+db:
+  image: rethinkdb
+  ports:
+    - "8080:8080"
+  volumes:
+    - "data:/data"
+  restart: always
+
+proxy:
+  build: ./proxy
+  ports:
+    - "80:80"
+  volumes:
+    - "app/build:/usr/share/nginx/html/"
+  links:
+    - web
+  restart: always
