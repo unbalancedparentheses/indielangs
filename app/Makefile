@@ -1,8 +1,11 @@
 MAIN_JS = app
 STATIC = index.html
+
 MATERIAL = node_modules/material-design-lite/material.min
 MATERIAL_CSS = $(MATERIAL).css
 MATERIAL_JS = $(MATERIAL).js
+MATERIAL_CSS_MAP = $(MATERIAL_CSS).map
+MATERIAL_JS_MAP = $(MATERIAL_JS).map
 
 SRC_DIR = src
 IMG_DIR = img
@@ -34,7 +37,10 @@ js:
 .PHONY: css
 css:
 	cp $(MATERIAL_CSS) $(BUILD_DIR)/
+	cp $(MATERIAL_CSS_MAP) $(BUILD_DIR)/
+
 	cp $(MATERIAL_JS) $(BUILD_DIR)/
+	cp $(MATERIAL_JS_MAP) $(BUILD_DIR)/
 
 .PHONY: img
 img:
