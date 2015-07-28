@@ -1,9 +1,12 @@
 web:
   build: ./web
+  volumes:
+    - "web:/app"
   links:
     - db
   environment:
     DB: db
+    MODE: dev
   restart: always
 
 worker:

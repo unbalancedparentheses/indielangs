@@ -2,7 +2,7 @@ OS = $(shell uname -s)
 ARCH =  $(shell uname -m)
 
 .PHONY: default
-default: build
+default: dev
 
 .PHONY: deps
 deps:
@@ -15,16 +15,13 @@ clean:
 	docker-compose kill
 	docker-compose rm -f
 
-.PHONY: build
-build:
-	docker-compose build
-
 .PHONY: migrate
 migrate:
 	docker-compose run --rm web pypy3 migrations.py
 
 .PHONY: dev
 dev: clean
+	docker-compose build
 	docker-compose up
 
 .PHONY: run
