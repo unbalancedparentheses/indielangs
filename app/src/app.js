@@ -14,16 +14,25 @@ var Request = {
               m("thead",
                 m("tr",
                   m("th.mdl-data-table__cell--non-numeric", "Name"),
-                  m("th.mdl-data-table__cell--non-numeric", "Added")
+                  m("th.mdl-data-table__cell--non-numeric", "Added"),
+                  m("th.mdl-data-table__cell--non-numeric", "Type"),
+                  m("th.mdl-data-table__cell--non-numeric", "Group")
                  )
                ),
 
               this.data().languages.map(function (l) {
-                  var relative_date = moment(l.time * 1000).fromNow();
+                  var name = l.name;
+                  var relative_date = moment(l.timestamp * 1000).fromNow();
+                  var group = l.group ? l.group : '-';
+                  var type = l.type ? l.type : '-';
 
 		  return m("tr",
-                           [m("td.mdl-data-table__cell--non-numeric", l.name),
-                            m("td.mdl-data-table__cell--non-numeric", relative_date)]
+                           [
+                               m("td.mdl-data-table__cell--non-numeric", name),
+                               m("td.mdl-data-table__cell--non-numeric", relative_date),
+                               m("td.mdl-data-table__cell--non-numeric", type),
+                               m("td.mdl-data-table__cell--non-numeric", group)
+                           ]
                           );
               })
              )
