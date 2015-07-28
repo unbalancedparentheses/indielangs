@@ -11,6 +11,8 @@ web:
 
 worker:
   build: ./worker
+  volumes:
+    - "worker:/app"
   links:
     - db
   environment:

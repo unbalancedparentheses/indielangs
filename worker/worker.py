@@ -26,50 +26,41 @@ DB = r.connect(DB_HOST, 28015)
 
 def main():
     """
-    xecutes the job at the beggining and at every SLEEP_MINUTES
+    Executes the job at the beggining and at every SLEEP_MINUTES
     """
-    job()
-    schedule.every(SLEEP_MINUTES).minutes.do(job)
+    run()
+    schedule.every(SLEEP_MINUTES).minutes.do(run)
 
     while True:
         schedule.run_pending()
         time.sleep(1)
 
 
-def job():
-    """
-    Returns the list of languages available in the language file
-    with the date in which it was added
-    """
-    language_history = set()
-    result = {}
-
+def run():
     prepare()
 
-    for i, commit in enumerate(commits()):
-        actual = languages_in_commit(commit)
+    dates = langs_dates()
+    metadata = languages_metadata()
+    languages = []
 
-        if i == 0:
-            timestamp = commit_time(commit)
+    for l in metadata:
+        object = {}
+        object['name'] = l
+        object['timestamp'] = dates[l]
 
-            for language in actual:
-                result[language] = timestamp
+        if metadata[l].get('type', None):
+            object['type'] = metadata[l]['type']
+        if metadata[l].get('group', None):
+            object['group'] = metadata[l]['group']
 
-            language_history = language_history.union(set(actual))
+        languages.append(object)
 
-        else:
-            old = language_history
-            language_history = language_history.union(set(actual))
-            diff = language_history - old
+    sorted_languages = sorted(languages,
+                              key = lambda lang: lang["timestamp"],
+                              reverse=True)
 
-            if diff:
-                timestamp = commit_time(commit)
+    store(sorted_languages)
 
-                for language in diff:
-                    result[language] = timestamp
-
-    filtered = filter_deleted(result)
-    store(filtered)
     clean()
 
 
@@ -94,14 +85,57 @@ def clean():
     shutil.rmtree("linguist")
 
 
+def langs_dates():
+    """
+    Returns the list of languages available in the language file
+    with the date in which it was added
+    """
+    language_history = set()
+    result = {}
+
+    for i, commit in enumerate(commits()):
+        actual = languages_in_commit(commit)
+
+        if i == 0:
+            timestamp = commit_time(commit)
+
+            for language in actual:
+                result[language] = timestamp
+
+            language_history = set(actual)
+        else:
+            old = language_history
+            language_history = language_history.union(set(actual))
+            diff = language_history - old
+
+            if diff:
+                timestamp = commit_time(commit)
+
+                for language in diff:
+                    result[language] = timestamp
+
+    filtered = filter_deleted(result)
+    return result
+
+
+def languages_metadata():
+    yaml = read_langs_file()
+    metadata_keys = ('type', 'group')
+
+    result = {}
+
+    for languages in yaml:
+        result[languages] = {k: yaml[languages][k] for k in yaml[languages] if k in metadata_keys}
+
+    return result
+
+
 def commits():
     """
     Returns the list of commits in ascending order that changed
     the languages file without counting the commit merges
     """
-    commits_b = subprocess.check_output(["git", "log", "--no-merges",
-                                         "--pretty=%H", LANGUAGES_PATH],
-                                        stderr=DEVNULL)
+    commits_b = subprocess.check_output(["git", "log", "--no-merges", "--pretty=%H", LANGUAGES_PATH], stderr=DEVNULL)
     commits_reverse = commits_b.decode().strip().split('\n')
 
     return commits_reverse[::-1]
@@ -110,13 +144,22 @@ def commits():
 def languages_lang_file():
     """
     Returns the list of languages present in the language file
+    with their respective type and group
+    """
+    yaml = read_langs_file()
+
+    return list(yaml.keys())
+
+def read_langs_file():
+    """
+    Reads the language file
     """
     with open(LANGUAGES_PATH) as langs_file:
         try:
             languages_yaml = yaml.load(langs_file)
-            return list(languages_yaml.keys())
+            return languages_yaml
         except:
-            return []
+            return {}
 
 
 def languages_in_commit(commit):
@@ -157,28 +200,19 @@ def filter_deleted(languages):
     return filtered_languages
 
 
-def store(result):
+def store(languages):
     """
     Stores in database the result.
     If the result is equal to the latest row in the db
     it only updates the timestamp
     """
-    serialized = []
-
-    for language in result.keys():
-        serialized.append({"name": language, "time": result[language]})
-
-    serialized_order = sorted(serialized,
-                              key=lambda lang: lang["time"],
-                              reverse=True)
-
     table = r.db('indielangs').table("languages")
     latest, latest_id = latest_result()
 
-    if latest == serialized_order:
+    if latest == languages:
         table.get(latest_id).update({'timestamp': r.now()}).run(DB)
     else:
-        row = {'languages': serialized_order, 'timestamp': r.now()}
+        row = {'languages': languages, 'timestamp': r.now()}
         table.insert(row).run(DB)
 
 
