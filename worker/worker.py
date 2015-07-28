@@ -168,7 +168,9 @@ def store(result):
     for language in result.keys():
         serialized.append({"name": language, "time": result[language]})
 
-    serialized_order = sorted(serialized, key=lambda lang: lang["time"], reverse=True)
+    serialized_order = sorted(serialized,
+                              key=lambda lang: lang["time"],
+                              reverse=True)
 
     table = r.db('indielangs').table("languages")
     latest, latest_id = latest_result()
