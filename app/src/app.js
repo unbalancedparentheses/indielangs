@@ -1,45 +1,126 @@
 import moment from "moment";
 import m from "mithril";
 
-var Request = {
-    data: m.prop(false),
 
-    click: function () {
-	return m.request({method: "GET", url: "http://" + window.location.host + "/api"}).then(Request.data);
-    },
+var url = "http://" + window.location.host + "/api";
+var Languages = {};
 
-    view: function () {
-	return [
-            m("table.mdl-data-table.mdl-js-data-table.mdl-shadow--4dp.mdl-cell.mdl-cell--12-col",
-              m("thead",
-                m("tr",
-                  m("th.mdl-data-table__cell--non-numeric", "Name"),
-                  m("th.mdl-data-table__cell--non-numeric", "Added"),
-                  m("th.mdl-data-table__cell--non-numeric", "Type"),
-                  m("th.mdl-data-table__cell--non-numeric", "Group")
-                 )
-               ),
-
-              this.data().languages.map(function (l) {
-                  var name = l.name;
-                  var relative_date = moment(l.timestamp * 1000).fromNow();
-                  var group = l.group ? l.group : '-';
-                  var type = l.type ? l.type : '-';
-
-		  return m("tr",
-                           [
-                               m("td.mdl-data-table__cell--non-numeric", name),
-                               m("td.mdl-data-table__cell--non-numeric", relative_date),
-                               m("td.mdl-data-table__cell--non-numeric", type),
-                               m("td.mdl-data-table__cell--non-numeric", group)
-                           ]
-                          );
-              })
-             )
-	]
-    }
+Languages.Items = function () {
+    this.langs = m.prop(undefined);
+    this.columns = m.prop([
+        "name",
+        "timestamp",
+        "type",
+        "group"
+    ]);
 };
 
-Request.click()
+Languages.controller = function () {
+    var ctrl = this;
 
-m.mount(document.getElementById("table"), Request);
+    ctrl.items = new Languages.Items();
+    ctrl.sort_by = m.prop('timestamp');
+    ctrl.ascending = m.prop(false);
+
+    ctrl.fetch = function () {
+        return m.request({method: "GET", url: url}).then(function (data) {
+            ctrl.items.langs(data['languages']);
+        });
+    };
+    ctrl.sort = function (e) {
+        var prop = e.target.getAttribute("data-sort-by");
+
+        if (prop) {
+            var list = ctrl.items.langs();
+
+            list.sort(function (a, b) {
+                if (!(prop in a) && !(prop in b)) {
+                    return 0;
+                }
+
+                if (!(prop in b)) {
+                    return 1
+                }
+
+                if (!(prop in a)) {
+                    return -1
+                }
+
+                if (a[prop] > b[prop]){
+                    return 1;
+                }
+
+                if (a[prop] < b[prop]) {
+                    return -1;
+                }
+
+                if (a[prop] == b[prop]) {
+                    if (a.name > b.name) {
+                        return 1;
+                    } else if (a.name < b.name) {
+                        return -1;
+                    } else {
+                        return 0;
+                    }
+                }
+            });
+
+            if (ctrl.sort_by() === prop) {
+                if (ctrl.ascending() === true) {
+                    list.reverse();
+                }
+
+                ctrl.ascending(!ctrl.ascending());
+            } else {
+                ctrl.sort_by(prop);
+                ctrl.ascending(true);
+            }
+
+        }
+    };
+}
+
+Languages.view = function (ctrl) {
+    return [
+        m("table.mdl-data-table.mdl-js-data-table.mdl-shadow--4dp.mdl-cell.mdl-cell--12-col",
+          m("thead",
+            m("tr",
+              ctrl.items.columns().map(function (c) {
+                  var selected = (ctrl.sort_by() == c);
+                  var selected_class = (selected ? 'selected' :  'unselected');
+
+                  var column_name =  c.charAt(0).toUpperCase() + c.slice(1);
+
+                  var order_char = ctrl.ascending() ? ' ▲' : ' ▼';
+
+                  column_name = selected ? column_name + order_char : column_name;
+
+                  return m("th[data-sort-by="+ c +"].mdl-data-table__cell--non-numeric",
+                           {onclick: ctrl.sort.bind(ctrl),
+                            class: selected_class},
+                           column_name);
+              })
+             )
+           ),
+          ctrl.items.langs() ? ctrl.items.langs().map(function (l) {
+              var name = l.name;
+              var relative_date = moment(l.timestamp * 1000).fromNow();
+              var type = l.type;
+
+              var group = l.group ? l.group : '-';
+
+              return m("tr", {key: name},
+                       [
+                           m("td.mdl-data-table__cell--non-numeric", name),
+                           m("td.mdl-data-table__cell--non-numeric", relative_date),
+                           m("td.mdl-data-table__cell--non-numeric", type),
+                           m("td.mdl-data-table__cell--non-numeric", group)
+                       ]
+                      );
+          })
+          : ctrl.fetch()
+         )
+    ]
+}
+
+m.mount(document.getElementById("table"), Languages);
