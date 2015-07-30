@@ -1,4 +1,5 @@
 MAIN_JS = app
+MAIN_CSS = style.styl
 STATIC = index.html
 
 MATERIAL = node_modules/material-design-lite/material.min
@@ -36,6 +37,8 @@ js:
 
 .PHONY: css
 css:
+	stylus $(SRC_DIR)/$(MAIN_CSS) -o $(BUILD_DIR)/
+
 	cp $(MATERIAL_CSS) $(BUILD_DIR)/
 	cp $(MATERIAL_CSS_MAP) $(BUILD_DIR)/
 

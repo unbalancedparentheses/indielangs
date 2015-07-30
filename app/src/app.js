@@ -1,8 +1,8 @@
 import moment from "moment";
 import m from "mithril";
 
-
 var url = "http://" + window.location.host + "/api";
+
 var Languages = {};
 
 Languages.Items = function () {
@@ -27,6 +27,7 @@ Languages.controller = function () {
             ctrl.items.langs(data['languages']);
         });
     };
+
     ctrl.sort = function (e) {
         var prop = e.target.getAttribute("data-sort-by");
 
@@ -35,26 +36,41 @@ Languages.controller = function () {
 
             list.sort(function (a, b) {
                 if (!(prop in a) && !(prop in b)) {
-                    return 0;
+
+                    if (a.name > b.name) {
+                        return 1;
+                    } else if (a.name < b.name) {
+                        return -1;
+                    } else {
+                        return 0;
+                    }
                 }
 
                 if (!(prop in b)) {
-                    return 1
-                }
-
-                if (!(prop in a)) {
                     return -1
                 }
 
-                if (a[prop] > b[prop]){
+                if (!(prop in a)) {
+                    return 1
+                }
+
+                var a_prop = a[prop];
+                var b_prop = b[prop];
+
+                if ((typeof(a_prop) == "string") && (typeof(b_prop) == "string")) {
+                    a_prop = a_prop.toLowerCase();
+                    b_prop = b_prop.toLowerCase();
+                }
+
+                if (a_prop > b_prop){
                     return 1;
                 }
 
-                if (a[prop] < b[prop]) {
+                if (a_prop < b_prop) {
                     return -1;
                 }
 
-                if (a[prop] == b[prop]) {
+                if (a_prop == b_prop) {
                     if (a.name > b.name) {
                         return 1;
                     } else if (a.name < b.name) {
@@ -75,10 +91,9 @@ Languages.controller = function () {
                 ctrl.sort_by(prop);
                 ctrl.ascending(true);
             }
-
         }
     };
-}
+};
 
 Languages.view = function (ctrl) {
     return [
@@ -91,7 +106,7 @@ Languages.view = function (ctrl) {
 
                   var column_name =  c.charAt(0).toUpperCase() + c.slice(1);
 
-                  var order_char = ctrl.ascending() ? ' ▲' : ' ▼';
+                  var order_char = ctrl.ascending() ? ' ▼' : ' ▲';
 
                   column_name = selected ? column_name + order_char : column_name;
 
@@ -106,7 +121,6 @@ Languages.view = function (ctrl) {
               var name = l.name;
               var relative_date = moment(l.timestamp * 1000).fromNow();
               var type = l.type;
-
               var group = l.group ? l.group : '-';
 
               return m("tr", {key: name},

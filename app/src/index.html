@@ -2,33 +2,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta charset="UTF-8">
 
-
   <link rel="stylesheet" href="./material.min.css"/>
   <script src="./material.min.js"></script>
 
   <script defer src="./bundle.js"></script>
-
-  <style>
-    .selected{
-    background-color: rgb(20, 185, 217);
-    cursor: pointer;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    }
-    .unselected{
-    cursor: pointer;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    }
-  </style>
+  <link rel="stylesheet" href="./style.css">
 
   <body>
     <div class="mdl-grid">
@@ -37,23 +15,21 @@
       <div class="mdl-cell mdl-cell--8-col-desktop mdl-cell--12-col-tablet mdl-cell--12-col-phone">
 
         <section class="mdl-card mdl-color--white mdl-shadow--4dp mdl-cell mdl-cell--12-col">
-
-          <div class="mdl-card__title" style="height: 400px; color: white; background: url('./pattern.jpg');">
-            <h4 class="mdl-card__title-text" style="font-weight: bold; font-size: 40px;">Indie Languages</h4>
+          <div id="header" class="mdl-card__title">
+            <h4 id="header-text" class="mdl-card__title-text">Indie Languages</h4>
           </div>
 
           <div class="mdl-card__supporting-text">
-            <p style="font-size: 18px; margin: 0px;">
+            <p id="read-more-text">
               Do you wanna stay up to date with the newest programming languages? Here's an automatically generated list of languages detected by github.
             </p>
           </div>
 
           <div class="mdl-card__actions mdl-card--border">
-            <a href="https://medium.com/this-is-not-a-monad-tutorial" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" style="font-weight: bold; color: rgb(19, 188, 217);">
+            <a id="read-more-link" href="https://medium.com/this-is-not-a-monad-tutorial" class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
               Read more about this project
             </a>
           </div>
-
         </section>
 
         <section id="table"></section>
