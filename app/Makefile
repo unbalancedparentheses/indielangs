@@ -13,8 +13,10 @@ IMG_DIR = img
 BUILD_DIR = build
 BUNDLE_JS = bundle.js
 
+STYLUS = node_modules/.bin/stylus
+
 .PHONY: default
-default: build
+default: deps build
 
 .PHONY: build
 build: pre html js css img
@@ -37,7 +39,7 @@ js:
 
 .PHONY: css
 css:
-	stylus $(SRC_DIR)/$(MAIN_CSS) -o $(BUILD_DIR)/
+	$(STYLUS) $(SRC_DIR)/$(MAIN_CSS) -o $(BUILD_DIR)/
 
 	cp $(MATERIAL_CSS) $(BUILD_DIR)/
 	cp $(MATERIAL_CSS_MAP) $(BUILD_DIR)/
