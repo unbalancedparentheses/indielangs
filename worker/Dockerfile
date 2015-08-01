@@ -7,10 +7,8 @@ RUN mkdir /app
 
 WORKDIR /app
 
-COPY ./requirements.txt /app/
-
-RUN pypy3 -m pip install -r requirements.txt
-
 COPY . /app
 
-CMD ["pypy3", "worker.py"]
+RUN pypy3 setup.py install
+
+CMD ["indielangs"]

@@ -1,9 +1,11 @@
+"""
+Store the languages information in the database
+"""
 import os
 import rethinkdb as r
 
 DB_HOST = os.getenv('DB', 'localhost')
 DB = r.connect(DB_HOST, 28015)
-
 
 def store(languages):
     """
@@ -11,6 +13,7 @@ def store(languages):
     If the result is equal to the latest row in the db
     it only updates the timestamp
     """
+
     table = r.db('indielangs').table("languages")
     latest, latest_id = latest_result()
 
