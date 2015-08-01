@@ -1,18 +1,53 @@
+"""
+Work with the languages github repo
+"""
+
 import os
 import shutil
 import subprocess
 import yaml
 
+
 DEVNULL = open(os.devnull, 'wb')
-LANGUAGES_PATH = "./lib/linguist/languages.yml"
-REPO_DIR = "/tmp/linguist"
 LANGUAGES_REPO = "https://github.com/github/linguist.git"
+REPO_DIR = "/tmp/linguist"
+LANGUAGES_PATH = "./lib/linguist/languages.yml"
+
+
+def languages():
+    """
+    Obtain the dates where each language support was added
+    and the metadata associated with it. Sort the list of
+    languages with their respective dates and metadata.
+    """
+    prepare()
+    dates_info = dates()
+    metadata_info = metadata()
+    langs = []
+
+    for lang in metadata_info:
+        aux = {}
+        aux['name'] = lang
+        aux['timestamp'] = dates_info[lang]
+
+        if metadata_info[lang].get('type', None):
+            aux['type'] = metadata_info[lang]['type']
+        if metadata_info[lang].get('group', None):
+            aux['group'] = metadata_info[lang]['group']
+
+        langs.append(aux)
+
+    sorted_languages = sorted(langs,
+                              key=lambda lang: lang["timestamp"],
+                              reverse=True)
+    clean()
+    return sorted_languages
 
 
 def prepare():
     """
     Clone the linguist repo and change the working directory to it.
-    It also deletes the linguist directory it if was already present
+    It also deletes the linguist directory it if was already present.
     """
     clean()
     subprocess.call(["git", "clone", LANGUAGES_REPO, REPO_DIR],
@@ -22,7 +57,7 @@ def prepare():
 
 def clean():
     """
-    Return to the previous working directory and remove the linguist directory
+    Return to the previous working directory and remove the linguist directory.
     """
     if os.path.exists(REPO_DIR):
         os.chdir("/")
@@ -31,8 +66,8 @@ def clean():
 
 def dates():
     """
-    Returns the list of languages available in the language file
-    with the date in which it was added
+    Return the list of languages available in the language file
+    with the date in which it was added.
     """
     language_history = set()
     result = {}
@@ -59,42 +94,50 @@ def dates():
                     result[language] = timestamp
 
     filtered = filter_deleted(result)
-    return result
+    return filtered
 
 
 def metadata():
-    yaml = read_langs_file()
+    """
+    Return the type and group metadata for each language
+    """
+    languages = read_langs_file()
     metadata_keys = ('type', 'group')
 
     result = {}
 
-    for languages in yaml:
-        result[languages] = {k: yaml[languages][k] for k in yaml[languages] if k in metadata_keys}
+    for language in languages:
+        result[language] = {k: languages[language][k]
+                            for k in languages[language]
+                            if k in metadata_keys}
     return result
 
 
 def commits():
     """
-    Returns the list of commits in ascending order that changed
-    the languages file without counting the commit merges
+    Return the list of commits in ascending order that changed
+    the languages file without counting the commit merges.
     """
-    commits_b = subprocess.check_output(["git", "log", "--no-merges", "--pretty=%H", LANGUAGES_PATH], stderr=DEVNULL)
+    commits_b = subprocess.check_output(["git", "log",
+                                         "--no-merges", "--pretty=%H",
+                                         LANGUAGES_PATH],
+                                        stderr=DEVNULL)
     commits_reverse = commits_b.decode().strip().split('\n')
     return commits_reverse[::-1]
 
 
 def lang_keys():
     """
-    Returns the list of languages present in the language file
-    with their respective type and group
+    Return the list of languages present in the language file
+    with their respective type and group.
     """
-    yaml = read_langs_file()
-    return list(yaml.keys())
+    languages = read_langs_file()
+    return list(languages.keys())
 
 
 def read_langs_file():
     """
-    Reads the language file
+    Reads the language file.
     """
     with open(LANGUAGES_PATH) as langs_file:
         try:
@@ -106,8 +149,8 @@ def read_langs_file():
 
 def langs_in_commit(commit):
     """
-    Returns the list of languages
-    present in the language file for a specific commit
+    Return the list of languages
+    present in the language file for a specific commit.
     """
     subprocess.call(["git", "checkout", commit, LANGUAGES_PATH],
                     stdout=DEVNULL, stderr=DEVNULL)
@@ -116,7 +159,7 @@ def langs_in_commit(commit):
 
 def commit_time(commit):
     """
-    Returns the commit time in epoc format of a specific commit
+    Return the commit time in epoc format of a specific commit.
     """
     output_b = subprocess.check_output(["git", "show", "-s", "--format=%ct",
                                         commit])
@@ -126,8 +169,8 @@ def commit_time(commit):
 
 def filter_deleted(languages):
     """
-    Returns a hash with the languages that are in the languages argument
-    minus the ones that are no longer present in the last commit
+    Return a hash with the languages that are in the languages argument
+    minus the ones that are no longer present in the last commit.
     """
     subprocess.call(["git", "reset", "--hard", "master"],
                     stdout=DEVNULL, stderr=DEVNULL)

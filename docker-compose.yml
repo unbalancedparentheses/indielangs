@@ -1,7 +1,7 @@
 web:
   build: ./web
   volumes:
-    - "web:/app"
+    - "web:/app:ro"
   links:
     - db
   environment:
@@ -12,7 +12,7 @@ web:
 worker:
   build: ./worker
   volumes:
-    - "worker:/app"
+    - "worker:/app:ro"
   links:
     - db
   environment:
@@ -32,7 +32,7 @@ proxy:
   ports:
     - "80:80"
   volumes:
-    - "app/build:/usr/share/nginx/html/"
+    - "app/build:/usr/share/nginx/html/:ro"
   links:
     - web
   restart: always
