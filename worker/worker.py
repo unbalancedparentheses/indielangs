@@ -18,7 +18,7 @@ DEVNULL = open(os.devnull, 'wb')
 
 LANGUAGES_REPO = "https://github.com/github/linguist.git"
 LANGUAGES_PATH = "./lib/linguist/languages.yml"
-SLEEP_MINUTES = 10
+REPO_DIR = "/tmp/linguist"
 
 DB_HOST = os.getenv('DB', 'localhost')
 DB = r.connect(DB_HOST, 28015)
@@ -28,12 +28,15 @@ def main():
     """
     Executes the job at the beggining and at every SLEEP_MINUTES
     """
-    run()
-    schedule.every(SLEEP_MINUTES).minutes.do(run)
+    try:
+        run()
+        schedule.every().hour.do(run)
 
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
+        while True:
+            schedule.run_pending()
+            time.sleep(1)
+    except:
+        clean()
 
 
 def run():
@@ -69,20 +72,19 @@ def prepare():
     Clone the linguist repo and change the working directory to it.
     It also deletes the linguist directory it if was already present
     """
-    if os.path.exists(LANGUAGES_PATH):
-        shutil.rmtree("linguist")
-
-    subprocess.call(["git", "clone", LANGUAGES_REPO],
+    clean()
+    subprocess.call(["git", "clone", LANGUAGES_REPO, REPO_DIR],
                     stdout=DEVNULL, stderr=DEVNULL)
-    os.chdir("linguist")
+    os.chdir(REPO_DIR)
 
 
 def clean():
     """
     Return to the previous working directory and remove the linguist directory
     """
-    os.chdir("..")
-    shutil.rmtree("linguist")
+    if os.path.exists(REPO_DIR):
+        os.chdir("/")
+        shutil.rmtree(REPO_DIR)
 
 
 def langs_dates():
