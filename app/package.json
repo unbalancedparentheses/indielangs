@@ -11,6 +11,7 @@
     }
   },
   "dependencies": {
-    "material-design-lite": "^1.0.1"
+    "material-design-lite": "^1.0.1",
+    "stylus": "^0.52.0"
   }
 }
