@@ -22,6 +22,7 @@ migrate: clean
 
 .PHONY: build
 build: clean
+	make -C web
 	docker-compose build
 
 .PHONY: dev
