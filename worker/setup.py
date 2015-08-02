@@ -14,15 +14,14 @@ def get_requirements():
 setup(
     name=PROJECT,
     version="0.1",
+
     description="Store list of languages detected by github in database",
-    classifiers=[
-        'Programming Language :: Python'
-    ],
-    keywords='worker',
+    keywords='programming languages indie',
     author='Federico Carrone',
     author_email='federico.carrone@gmail.com',
     url='https://github.com/unbalancedparentheses/indielangs',
     license='MIT License',
+
     packages=find_packages(exclude=['ez_setup']),
     zip_safe=True,
     entry_points={

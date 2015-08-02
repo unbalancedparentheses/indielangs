@@ -10,6 +10,7 @@ import os
 import schedule
 import sys
 import time
+import traceback
 
 DEVNULL = open(os.devnull, 'wb')
 
@@ -25,8 +26,11 @@ def main():
         while True:
             schedule.run_pending()
             time.sleep(1)
-    except:
-        gitlog. clean()
+    except Exception as e:
+        gitlog.clean()
+        print(e)
+        traceback.print_exc(file=sys.stdout)
+        return 1
 
 
 def run():
