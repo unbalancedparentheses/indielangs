@@ -1,18 +1,6 @@
-FROM pypy:latest
+FROM nginx
 
-RUN  cd /tmp && curl -O https://bootstrap.pypa.io/get-pip.py && \
-     pypy3 /tmp/get-pip.py
+COPY ./default.conf /etc/nginx/conf.d/default.conf
+ADD build /usr/share/nginx/html/
 
-RUN mkdir /app
-
-WORKDIR /app
-
-COPY ./requirements.txt /app/
-
-RUN pypy3 -m pip install -r requirements.txt
-
-COPY . /app
-
-EXPOSE 8000
-
-CMD ["gunicorn", "web:app", "--config=gunicorn.py", "-b", "0.0.0.0:8000"]
+VOLUME ["/usr/share/nginx/html/"]

@@ -18,7 +18,7 @@ clean:
 
 .PHONY: migrate
 migrate: clean
-	docker-compose run --rm web $(PYTHON) migrations.py
+	docker-compose run --rm api $(PYTHON) migrations.py
 
 .PHONY: build
 build: clean

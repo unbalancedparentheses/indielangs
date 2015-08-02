@@ -1,7 +1,7 @@
-web:
-  build: ./web
+api:
+  build: ./api
   volumes:
-    - "web:/app:ro"
+    - "api:/app:ro"
   links:
     - db
   environment:
@@ -27,12 +27,12 @@ db:
     - "data:/data"
   restart: always
 
-proxy:
-  build: ./proxy
+web:
+  build: ./web
   ports:
     - "80:80"
   volumes:
-    - "app/build:/usr/share/nginx/html/:ro"
+    - "web/build:/usr/share/nginx/html/:ro"
   links:
-    - web
+    - api
   restart: always
