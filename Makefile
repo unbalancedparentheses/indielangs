@@ -30,8 +30,3 @@ dev: clean
 .PHONY: run
 run:
 	docker-compose up -d
-
-.PHONY: lint
-lint:
-	-@pep8 $(wildcard **/*.py);  \
-	pylint $(wildcard **/*.py)
