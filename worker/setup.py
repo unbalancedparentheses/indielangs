@@ -6,7 +6,7 @@ import os.path
 PROJECT = "indielangs"
 
 def get_requirements():
-    """Reads the installation requirements from requirements.pip"""
+    """Reads the installation requirements from requirements.txt"""
     with open("requirements.txt") as f:
         return [line.rstrip() for line in f if not line.startswith("#")]
 
@@ -14,20 +14,22 @@ def get_requirements():
 setup(
     name=PROJECT,
     version="0.1",
-    description="Check list of emails using Rapportive API",
+    description="Store list of languages detected by github in database",
     classifiers=[
         'Programming Language :: Python'
     ],
     keywords='worker',
     author='Federico Carrone',
     author_email='federico.carrone@gmail.com',
-    url='https://github.com/jordan-wright/rapportive',
+    url='https://github.com/unbalancedparentheses/indielangs',
     license='MIT License',
     packages=find_packages(exclude=['ez_setup']),
     include_package_data=True,
-    zip_safe=False,
-    scripts=[
-        'scripts/indielangs',
-    ],
-    install_requires=get_requirements(),
+    zip_safe=True,
+    entry_points={
+        'console_scripts': [
+            'indielangs = indielangs.worker:main'
+        ]
+    },
+    install_requires=get_requirements()
 )
