@@ -1,5 +1,5 @@
 import pytest
-from worker import gitlog
+from indielangs import gitlog
 
 def test_len():
     len_languages = len(gitlog.languages())

@@ -5,12 +5,6 @@ import os.path
 
 PROJECT = "indielangs"
 
-def get_requirements():
-    """Reads the installation requirements from requirements.txt"""
-    with open("requirements.txt") as f:
-        return [line.rstrip() for line in f if not line.startswith("#")]
-
-
 setup(
     name=PROJECT,
     version="0.1",
@@ -29,5 +23,9 @@ setup(
             'indielangs = indielangs.worker:main'
         ]
     },
-    install_requires=get_requirements()
+    install_requires=[
+        'schedule==0.3.2',
+        'PyYAML==3.11',
+        'rethinkdb'
+    ]
 )
