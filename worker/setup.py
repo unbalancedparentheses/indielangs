@@ -24,7 +24,6 @@ setup(
     url='https://github.com/unbalancedparentheses/indielangs',
     license='MIT License',
     packages=find_packages(exclude=['ez_setup']),
-    include_package_data=True,
     zip_safe=True,
     entry_points={
         'console_scripts': [
