@@ -1,7 +1,7 @@
 import pytest
-from .. import gitlog
+import gitlog
 
-def test_gitlog_len():
+def test_len():
     len_languages = len(gitlog.languages())
 
     gitlog.prepare()
@@ -10,11 +10,12 @@ def test_gitlog_len():
 
     assert len_languages == len_file
 
-def test_gitlog_keys():
-    langs_list = [lang['name'] for lang in gitlog.languages()]
+
+def test_keys():
+    langs_list = sorted([lang['name'] for lang in gitlog.languages()])
 
     gitlog.prepare()
-    langs_file_list = gitlog.lang_keys()
+    langs_file_list = sorted(gitlog.lang_keys())
     gitlog.clean()
 
     assert langs_list == langs_file_list
