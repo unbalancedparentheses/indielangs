@@ -1,5 +1,6 @@
 OS = $(shell uname -s)
 ARCH =  $(shell uname -m)
+PYTHON = pypy3
 
 .PHONY: default
 default: build
@@ -17,7 +18,7 @@ clean:
 
 .PHONY: migrate
 migrate: clean
-	docker-compose run --rm web pypy3 migrations.py
+	docker-compose run --rm web $(PYTHON) migrations.py
 
 .PHONY: build
 build: clean
