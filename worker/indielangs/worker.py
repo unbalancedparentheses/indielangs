@@ -3,8 +3,9 @@
 Fetch github linguist repository, process its information
 and store it in database
 """
-import db
-import gitlog
+from indielangs import db
+from indielangs import gitlog
+
 import os
 import schedule
 import sys
