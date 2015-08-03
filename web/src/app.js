@@ -3,52 +3,6 @@ import m from 'mithril'
 
 var url = 'http://' + window.location.host + '/api'
 
-var comparator = function (a, b) {
-  if (!(prop in a) && !(prop in b)) {
-    if (a.name > b.name) {
-      return 1
-    } else if (a.name < b.name) {
-      return -1
-    } else {
-      return 0
-    }
-  }
-
-  if (!(prop in b)) {
-    return -1
-  }
-
-  if (!(prop in a)) {
-    return 1
-  }
-
-  var a_prop = a[prop]
-  var b_prop = b[prop]
-
-  if ((typeof (a_prop) === 'string') && (typeof (b_prop) === 'string')) {
-    a_prop = a_prop.toLowerCase()
-    b_prop = b_prop.toLowerCase()
-  }
-
-  if (a_prop > b_prop) {
-    return 1
-  }
-
-  if (a_prop < b_prop) {
-    return -1
-  }
-
-  if (a_prop === b_prop) {
-    if (a.name > b.name) {
-      return 1
-    } else if (a.name < b.name) {
-      return -1
-    } else {
-      return 0
-    }
-  }
-}
-
 var Languages = {}
 
 Languages.Items = function () {
@@ -140,6 +94,50 @@ Languages.view = function (ctrl) {
         : ctrl.fetch()
     )
   ]
+}
+
+var comparator = function (a, b) {
+  if (!(prop in a) && !(prop in b)) {
+    return compareNames(a, b)
+  }
+
+  if (!(prop in b)) {
+    return -1
+  }
+
+  if (!(prop in a)) {
+    return 1
+  }
+
+  var a_prop = a[prop]
+  var b_prop = b[prop]
+
+  if ((typeof (a_prop) === 'string') && (typeof (b_prop) === 'string')) {
+    a_prop = a_prop.toLowerCase()
+    b_prop = b_prop.toLowerCase()
+  }
+
+  if (a_prop > b_prop) {
+    return 1
+  }
+
+  if (a_prop < b_prop) {
+    return -1
+  }
+
+  if (a_prop === b_prop) {
+    return compareNames(a, b)
+  }
+}
+
+var compareNames = function (a, b) {
+  if (a.name > b.name) {
+    return 1
+  } else if (a.name < b.name) {
+    return -1
+  } else {
+    return 0
+  }
 }
 
 m.mount(document.getElementById('table'), Languages)
