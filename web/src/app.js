@@ -1,4 +1,4 @@
-import moment from "moment";
+import "moment";
 import m from "mithril";
 
 var url = "http://" + window.location.host + "/api";
@@ -119,7 +119,7 @@ Languages.view = function (ctrl) {
            ),
           ctrl.items.langs() ? ctrl.items.langs().map(function (l) {
               var name = l.name;
-              var relative_date = moment(l.timestamp * 1000).fromNow();
+              var relative_date = moment.unix(l.timestamp).fromNow();
               var type = l.type;
               var group = l.group ? l.group : '-';
 
