@@ -14,6 +14,7 @@ BUILD_DIR = build
 BUNDLE_JS = bundle.js
 
 STYLUS = node_modules/.bin/stylus
+STANDARD = node_modules/.bin/standard --format
 
 .PHONY: default
 default: deps build
@@ -64,3 +65,7 @@ deps:	check-deps
 .PHONY: dev
 dev: deps build
 	stalk make src
+
+.PHONY: lint
+lint:
+	$(STANDARD) $(SRC_DIR)/*.js
