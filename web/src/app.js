@@ -34,7 +34,7 @@ Languages.controller = function () {
     if (prop) {
       var list = ctrl.items.langs()
 
-      list.sort(comparator)
+      list.sort(comp_langs)
 
       if (ctrl.sort_by() === prop) {
         if (ctrl.ascending() === true) {
@@ -96,9 +96,9 @@ Languages.view = function (ctrl) {
   ]
 }
 
-var comparator = function (a, b) {
+var comp_langs = function (a, b) {
   if (!(prop in a) && !(prop in b)) {
-    return compareNames(a, b)
+    return comp_names(a, b)
   }
 
   if (!(prop in b)) {
@@ -126,11 +126,11 @@ var comparator = function (a, b) {
   }
 
   if (a_prop === b_prop) {
-    return compareNames(a, b)
+    return comp_names(a, b)
   }
 }
 
-var compareNames = function (a, b) {
+var comp_names = function (a, b) {
   if (a.name > b.name) {
     return 1
   } else if (a.name < b.name) {
